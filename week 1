@@ -1,0 +1,54 @@
+import java.util.Scanner;
+
+/**
+ * Program Name: StringProcessor
+ * Demonstrates string operations, ASCII codes, and exception handling.
+ */
+public class StringProcessor {
+
+    private static final String SPACE_REGEX = "\\s+"; // Fixed variable
+
+    public static void main(String[] args) {
+        new StringProcessor().runApp();
+    }
+
+    public void runApp() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            String text = promptInput(scanner, "Enter a sentence: ");
+            int index = Integer.parseInt(promptInput(scanner, "Enter character index: "));
+
+            char character = extractCharacter(text, index);
+            int asciiValue = computeAsciiValue(character);
+            String[] words = splitIntoWords(text);
+
+            System.out.println("\n--- Output ---");
+            System.out.println("Character:\t'" + character + "'");
+            System.out.println("ASCII Code:\t" + asciiValue);
+            System.out.println("Word Count:\t" + words.length);
+
+        } catch (NumberFormatException e) {
+            System.err.println("Error: Index must be a valid integer.");
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("Error: Index is out of string bounds.");
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    public String promptInput(Scanner scanner, String message) {
+        System.out.print(message);
+        return scanner.nextLine();
+    }
+
+    public char extractCharacter(String str, int index) throws IndexOutOfBoundsException {
+        return str.charAt(index);
+    }
+
+    public int computeAsciiValue(char ch) {
+        return (int) ch;
+    }
+
+    public String[] splitIntoWords(String str) {
+        return str.trim().isEmpty() ? new String[0] : str.trim().split(SPACE_REGEX);
+    }
+}
