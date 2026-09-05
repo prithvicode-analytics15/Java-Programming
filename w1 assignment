@@ -39,3 +39,84 @@ public class ExamHallSeatChecker {
         checkDuplicateSeats(input2);
     }
 }
+
+SOLUTION 2
+public class TypingAccuracyChecker {
+
+    public static void checkTypingAccuracy(String original, String typed) {
+        int totalChars = original.length();
+        int matched = 0;
+        int firstMismatchPos = -1;
+        char origMismatchChar = ' ';
+        char typedMismatchChar = ' ';
+
+        for (int i = 0; i < totalChars; i++) {
+            char origChar = original.charAt(i);
+            char typedChar = typed.charAt(i);
+
+            if (origChar == typedChar) {
+                matched++;
+            } else if (firstMismatchPos == -1) {
+                // Record 1-based position for the first mismatch
+                firstMismatchPos = i + 1;
+                origMismatchChar = origChar;
+                typedMismatchChar = typedChar;
+            }
+        }
+
+        double accuracy = ((double) matched / totalChars) * 100.0;
+
+        if (firstMismatchPos == -1) {
+            System.out.printf("Matched: %d/%d | Accuracy: %.2f%% | No Mismatches%n", 
+                              matched, totalChars, accuracy);
+        } else {
+            System.out.printf("Matched: %d/%d | Accuracy: %.2f%% | First Mismatch at position %d ('%c' vs '%c')%n", 
+                              matched, totalChars, accuracy, firstMismatchPos, origMismatchChar, typedMismatchChar);
+        }
+    }
+
+    public static void main(String[] args) {
+        checkTypingAccuracy("hello world", "hello worlt");
+        checkTypingAccuracy("coding", "coding");
+    }
+}
+
+SOLUTION 3
+public class TrafficSignalAnalyzer {
+
+    public static void findLongestStreak(String signalLog) {
+        if (signalLog == null || signalLog.length() == 0) {
+            System.out.println("Empty signal log.");
+            return;
+        }
+
+        char streakColor = signalLog.charAt(0);
+        int maxStreak = 1;
+
+        char currentColor = signalLog.charAt(0);
+        int currentStreak = 1;
+
+        for (int i = 1; i < signalLog.length(); i++) {
+            if (signalLog.charAt(i) == currentColor) {
+                currentStreak++;
+            } else {
+                currentColor = signalLog.charAt(i);
+                currentStreak = 1;
+            }
+
+            if (currentStreak > maxStreak) {
+                maxStreak = currentStreak;
+                streakColor = currentColor;
+            }
+        }
+
+        System.out.println("Longest Streak: '" + streakColor + "' repeated " + maxStreak + " times");
+    }
+
+    public static void main(String[] args) {
+        findLongestStreak("RRGGGYRR");
+        findLongestStreak("RRRRYYGG");
+    }
+}
+
+
