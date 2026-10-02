@@ -1,0 +1,563 @@
+1.))
+import java.util.*;
+
+abstract class PaymentMethod {
+    double amount;
+    PaymentMethod(double amount) { this.amount = amount; }
+    abstract double getAdjustedAmount();
+    abstract String getType();
+}
+
+class CardPayment extends PaymentMethod {
+    CardPayment(double amount) { super(amount); }
+    double getAdjustedAmount() { return amount * 1.02; }
+    String getType() { return "CARD"; }
+}
+
+class WalletPayment extends PaymentMethod {
+    WalletPayment(double amount) { super(amount); }
+    double getAdjustedAmount() { return amount * 1.01; }
+    String getType() { return "WALLET"; }
+}
+
+class BankTransferPayment extends PaymentMethod {
+    BankTransferPayment(double amount) { super(amount); }
+    double getAdjustedAmount() { return amount; }
+    String getType() { return "BANKTRANSFER"; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        if (!sc.hasNextInt()) return;
+        
+        int n = sc.nextInt();
+        List<PaymentMethod> list = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String type = sc.next();
+            double amt = sc.nextDouble();
+            if (type.equalsIgnoreCase("CARD")) list.add(new CardPayment(amt));
+            else if (type.equalsIgnoreCase("WALLET")) list.add(new WalletPayment(amt));
+            else if (type.equalsIgnoreCase("BANKTRANSFER")) list.add(new BankTransferPayment(amt));
+        }
+
+        double total = 0;
+        for (PaymentMethod p : list) {
+            double adjusted = p.getAdjustedAmount();
+            total += adjusted;
+            System.out.printf("%s: %.2f%n%n", p.getType(), adjusted);
+        }
+        System.out.printf("Total: %.2f%n", total);
+    }
+}
+2.))
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+abstract class LibraryItem {
+    protected static final LocalDate BASE_DATE = LocalDate.parse("2023-10-26");
+    protected String title;
+
+    public LibraryItem(String title) {
+        this.title = title;
+    }
+
+    public abstract LocalDate calculateDueDate();
+
+    public String getTitle() {
+        return title;
+    }
+}
+
+class Book extends LibraryItem {
+    public Book(String title) {
+        super(title);
+    }
+
+    @Override
+    public LocalDate calculateDueDate() {
+        return BASE_DATE.plusDays(14);
+    }
+}
+
+class DVD extends LibraryItem {
+    public DVD(String title) {
+        super(title);
+    }
+
+    @Override
+    public LocalDate calculateDueDate() {
+        return BASE_DATE.plusDays(7);
+    }
+}
+
+class Magazine extends LibraryItem {
+    public Magazine(String title) {
+        super(title);
+    }
+
+    @Override
+    public LocalDate calculateDueDate() {
+        return BASE_DATE.plusDays(3);
+    }
+}
+
+class LibraryItemFactory {
+    public static LibraryItem createItem(String type, String title) {
+        switch (type.toUpperCase()) {
+            case "BOOK":
+                return new Book(title);
+            case "DVD":
+                return new DVD(title);
+            case "MAGAZINE":
+                return new Magazine(title);
+            default:
+                throw new IllegalArgumentException("Unknown item type: " + type);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (!scanner.hasNextInt()) {
+            return;
+        }
+
+        int n = Integer.parseInt(scanner.nextLine().trim());
+        List<LibraryItem> items = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) continue;
+
+                int firstSpaceIndex = line.indexOf(' ');
+                String type = line.substring(0, firstSpaceIndex);
+                String title = line.substring(firstSpaceIndex + 1).replace("\"", "");
+
+                items.add(LibraryItemFactory.createItem(type, title));
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (int i = 0; i < items.size(); i++) {
+            LibraryItem item = items.get(i);
+            System.out.printf("%s: %s%n", item.getTitle(), item.calculateDueDate().format(formatter));
+            if (i < items.size() - 1) {
+                System.out.println();
+            }
+        }
+
+        scanner.close();
+    }
+}
+3.))
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+abstract class Delivery {
+    protected double weight;
+    protected double distance;
+
+    public Delivery(double weight, double distance) {
+        this.weight = weight;
+        this.distance = distance;
+    }
+
+    public abstract double calculateFee();
+    public abstract String getType();
+}
+
+class StandardDelivery extends Delivery {
+    public StandardDelivery(double weight, double distance) {
+        super(weight, distance);
+    }
+
+    @Override
+    public double calculateFee() {
+        return 5.0 + (0.50 * weight) + (0.10 * distance);
+    }
+
+    @Override
+    public String getType() {
+        return "STANDARD";
+    }
+}
+
+class ExpressDelivery extends Delivery {
+    public ExpressDelivery(double weight, double distance) {
+        super(weight, distance);
+    }
+
+    @Override
+    public double calculateFee() {
+        return 15.0 + (1.00 * weight) + (0.20 * distance);
+    }
+
+    @Override
+    public String getType() {
+        return "EXPRESS";
+    }
+}
+
+class InternationalDelivery extends Delivery {
+    private double customsFee;
+
+    public InternationalDelivery(double weight, double distance, double customsFee) {
+        super(weight, distance);
+        this.customsFee = customsFee;
+    }
+
+    @Override
+    public double calculateFee() {
+        return 25.0 + (2.00 * weight) + (0.50 * distance) + customsFee;
+    }
+
+    @Override
+    public String getType() {
+        return "INTERNATIONAL";
+    }
+}
+
+class DeliveryFactory {
+    public static Delivery createDelivery(String[] parts) {
+        String type = parts[0].toUpperCase();
+        double weight = Double.parseDouble(parts[1]);
+        double distance = Double.parseDouble(parts[2]);
+
+        switch (type) {
+            case "STANDARD":
+                return new StandardDelivery(weight, distance);
+            case "EXPRESS":
+                return new ExpressDelivery(weight, distance);
+            case "INTERNATIONAL":
+                double customsFee = Double.parseDouble(parts[3]);
+                return new InternationalDelivery(weight, distance, customsFee);
+            default:
+                throw new IllegalArgumentException("Unknown delivery type: " + type);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (!scanner.hasNextInt()) {
+            return;
+        }
+
+        int n = scanner.nextInt();
+        List<Delivery> deliveries = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String type = scanner.next();
+            double weight = scanner.nextDouble();
+            double distance = scanner.nextDouble();
+
+            if (type.equalsIgnoreCase("INTERNATIONAL")) {
+                double customsFee = scanner.nextDouble();
+                deliveries.add(new InternationalDelivery(weight, distance, customsFee));
+            } else if (type.equalsIgnoreCase("STANDARD")) {
+                deliveries.add(new StandardDelivery(weight, distance));
+            } else if (type.equalsIgnoreCase("EXPRESS")) {
+                deliveries.add(new ExpressDelivery(weight, distance));
+            }
+        }
+
+        double totalFee = 0.0;
+
+        for (int i = 0; i < deliveries.size(); i++) {
+            Delivery delivery = deliveries.get(i);
+            double fee = delivery.calculateFee();
+            totalFee += fee;
+            System.out.printf("%s: %.2f%n", delivery.getType(), fee);
+            if (i < deliveries.size() - 1) {
+                System.out.println();
+            }
+        }
+
+        System.out.printf("Total: %.2f%n", totalFee);
+
+        scanner.close();
+    }
+}
+4.))
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+abstract class Question {
+    protected String questionText;
+    protected String correctAnswer;
+    protected String studentAnswer;
+    protected double points;
+
+    public Question(String questionText, String correctAnswer, String studentAnswer, double points) {
+        this.questionText = questionText;
+        this.correctAnswer = correctAnswer;
+        this.studentAnswer = studentAnswer;
+        this.points = points;
+    }
+
+    public abstract double evaluateScore();
+    public abstract String getType();
+}
+
+class MCQQuestion extends Question {
+    public MCQQuestion(String questionText, String correctAnswer, String studentAnswer, double points) {
+        super(questionText, correctAnswer, studentAnswer, points);
+    }
+
+    @Override
+    public double evaluateScore() {
+        if (correctAnswer.equalsIgnoreCase(studentAnswer)) {
+            return points;
+        }
+        return 0.0;
+    }
+
+    @Override
+    public String getType() {
+        return "MCQ";
+    }
+}
+
+class TFQuestion extends Question {
+    public TFQuestion(String questionText, String correctAnswer, String studentAnswer, double points) {
+        super(questionText, correctAnswer, studentAnswer, points);
+    }
+
+    @Override
+    public double evaluateScore() {
+        if (correctAnswer.equalsIgnoreCase(studentAnswer)) {
+            return points;
+        }
+        return 0.0;
+    }
+
+    @Override
+    public String getType() {
+        return "TF";
+    }
+}
+
+class EssayQuestion extends Question {
+    public EssayQuestion(String questionText, String correctAnswer, String studentAnswer, double points) {
+        super(questionText, correctAnswer, studentAnswer, points);
+    }
+
+    @Override
+    public double evaluateScore() {
+        String[] keywords = correctAnswer.split(",");
+        int matchCount = 0;
+        String lowerStudentAnswer = studentAnswer.toLowerCase();
+
+        for (String kw : keywords) {
+            String trimmedKw = kw.trim().toLowerCase();
+            if (!trimmedKw.isEmpty() && lowerStudentAnswer.contains(trimmedKw)) {
+                matchCount++;
+            }
+        }
+
+        if (matchCount >= 2) {
+            return points * 0.75;
+        } else if (matchCount == 1) {
+            return points * 0.50;
+        } else {
+            return 0.0;
+        }
+    }
+
+    @Override
+    public String getType() {
+        return "ESSAY";
+    }
+}
+
+class QuestionFactory {
+    public static Question createQuestion(String type, String qText, String corrAns, String studAns, double points) {
+        switch (type.toUpperCase()) {
+            case "MCQ":
+                return new MCQQuestion(qText, corrAns, studAns, points);
+            case "TF":
+                return new TFQuestion(qText, corrAns, studAns, points);
+            case "ESSAY":
+                return new EssayQuestion(qText, corrAns, studAns, points);
+            default:
+                throw new IllegalArgumentException("Unknown question type: " + type);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (!scanner.hasNextInt()) {
+            return;
+        }
+
+        int n = Integer.parseInt(scanner.nextLine().trim());
+        List<Question> questions = new ArrayList<>();
+
+        // Pattern matches: QuestionType "QuestionText" "CorrectAnswer" "StudentAnswer" Points
+        Pattern pattern = Pattern.compile("^(\\S+)\\s+\"([^\"]*)\"\\s+\"([^\"]*)\"\\s+\"([^\"]*)\"\\s+(\\d+(?:\\.\\d+)?)$");
+
+        for (int i = 0; i < n; i++) {
+            if (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                while (line.isEmpty() && scanner.hasNextLine()) {
+                    line = scanner.nextLine().trim();
+                }
+
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    String type = matcher.group(1);
+                    String qText = matcher.group(2);
+                    String corrAns = matcher.group(3);
+                    String studAns = matcher.group(4);
+                    double points = Double.parseDouble(matcher.group(5));
+
+                    questions.add(QuestionFactory.createQuestion(type, qText, corrAns, studAns, points));
+                }
+            }
+        }
+
+        double totalScore = 0.0;
+
+        for (int i = 0; i < questions.size(); i++) {
+            Question q = questions.get(i);
+            double score = q.evaluateScore();
+            totalScore += score;
+            System.out.printf("%s: %.2f%n", q.getType(), score);
+            if (i < questions.size() - 1) {
+                System.out.println();
+            }
+        }
+
+        System.out.printf("%nTotal Score: %.2f%n", totalScore);
+
+        scanner.close();
+    }
+}
+5.))
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+abstract class Transport {
+    protected double distance;
+
+    public Transport(double distance) {
+        this.distance = distance;
+    }
+
+    public abstract double calculateFare();
+    public abstract String getType();
+}
+
+class BusTransport extends Transport {
+    public BusTransport(double distance) {
+        super(distance);
+    }
+
+    @Override
+    public double calculateFare() {
+        double fare = 2.0 + (0.10 * distance);
+        return Math.min(fare, 10.0);
+    }
+
+    @Override
+    public String getType() {
+        return "BUS";
+    }
+}
+
+class TrainTransport extends Transport {
+    public TrainTransport(double distance) {
+        super(distance);
+    }
+
+    @Override
+    public double calculateFare() {
+        return 3.0 + (0.15 * distance);
+    }
+
+    @Override
+    public String getType() {
+        return "TRAIN";
+    }
+}
+
+class MetroTransport extends Transport {
+    private double peakHourFactor;
+
+    public MetroTransport(double distance, double peakHourFactor) {
+        super(distance);
+        this.peakHourFactor = peakHourFactor;
+    }
+
+    @Override
+    public double calculateFare() {
+        return (1.50 + (0.20 * distance)) * peakHourFactor;
+    }
+
+    @Override
+    public String getType() {
+        return "METRO";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (!scanner.hasNextInt()) {
+            return;
+        }
+
+        int n = scanner.nextInt();
+        List<Transport> journeys = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String type = scanner.next();
+            double distance = scanner.nextDouble();
+
+            if (type.equalsIgnoreCase("BUS")) {
+                journeys.add(new BusTransport(distance));
+            } else if (type.equalsIgnoreCase("TRAIN")) {
+                journeys.add(new TrainTransport(distance));
+            } else if (type.equalsIgnoreCase("METRO")) {
+                double peakHourFactor = scanner.nextDouble();
+                journeys.add(new MetroTransport(distance, peakHourFactor));
+            }
+        }
+
+        double totalFare = 0.0;
+
+        for (int i = 0; i < journeys.size(); i++) {
+            Transport transport = journeys.get(i);
+            double fare = transport.calculateFare();
+            totalFare += fare;
+            System.out.printf("%s: %.2f%n", transport.getType(), fare);
+            if (i < journeys.size() - 1) {
+                System.out.println();
+            }
+        }
+
+        System.out.printf("%nTotal: %.2f%n", totalFare);
+
+        scanner.close();
+    }
+}
