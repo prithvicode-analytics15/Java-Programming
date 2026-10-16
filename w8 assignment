@@ -1,0 +1,426 @@
+1.))
+import java.util.*;
+
+abstract class Customer {
+    double amount;
+
+    Customer(double amount) {
+        this.amount = amount;
+    }
+
+    abstract double calculateBill();
+    abstract String getType();
+}
+
+class Student extends Customer {
+    Student(double amount) {
+        super(amount);
+    }
+
+    double calculateBill() {
+        return amount * 0.90;
+    }
+
+    String getType() {
+        return "STUDENT";
+    }
+}
+
+class Staff extends Customer {
+    Staff(double amount) {
+        super(amount);
+    }
+
+    double calculateBill() {
+        return amount * 0.95;
+    }
+
+    String getType() {
+        return "STAFF";
+    }
+}
+
+class Guest extends Customer {
+    Guest(double amount) {
+        super(amount);
+    }
+
+    double calculateBill() {
+        return amount + 10;
+    }
+
+    String getType() {
+        return "GUEST";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double total = 0;
+
+        for (int i = 0; i < n; i++) {
+            String type = sc.next();
+            double amount = sc.nextDouble();
+            Customer c;
+
+            switch (type) {
+                case "STUDENT":
+                    c = new Student(amount);
+                    break;
+                case "STAFF":
+                    c = new Staff(amount);
+                    break;
+                default:
+                    c = new Guest(amount);
+            }
+
+            double bill = c.calculateBill();
+            System.out.printf("%s: %.2f%n",
+                    c.getType(), bill);
+            total += bill;
+        }
+
+        System.out.printf("Total: %.2f%n", total);
+        sc.close();
+    }
+2.))
+import java.util.*;
+
+abstract class Vehicle {
+    int hours;
+
+    Vehicle(int hours) {
+        this.hours = hours;
+    }
+
+    abstract double calculateCharge();
+    abstract String getType();
+}
+
+class Bike extends Vehicle {
+    Bike(int hours) {
+        super(hours);
+    }
+
+    double calculateCharge() {
+        return hours * 10.0;
+    }
+
+    String getType() {
+        return "BIKE";
+    }
+}
+
+class Car extends Vehicle {
+    Car(int hours) {
+        super(hours);
+    }
+
+    double calculateCharge() {
+        return 30 + (hours - 1) * 20.0;
+    }
+
+    String getType() {
+        return "CAR";
+    }
+}
+
+class Truck extends Vehicle {
+    Truck(int hours) {
+        super(hours);
+    }
+
+    double calculateCharge() {
+        return Math.max(100, hours * 50.0);
+    }
+
+    String getType() {
+        return "TRUCK";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double total = 0;
+
+        for (int i = 0; i < n; i++) {
+            String type = sc.next();
+            int hours = sc.nextInt();
+            Vehicle v;
+
+            switch (type) {
+                case "BIKE":
+                    v = new Bike(hours);
+                    break;
+                case "CAR":
+                    v = new Car(hours);
+                    break;
+                default:
+                    v = new Truck(hours);
+            }
+
+            double charge = v.calculateCharge();
+            System.out.printf("%s: %.2f%n",
+                    v.getType(), charge);
+            total += charge;
+        }
+
+        System.out.printf("Total: %.2f%n", total);
+        sc.close();
+    }
+}
+3.))
+import java.util.*;
+
+abstract class Room {
+    int units;
+
+    Room(int units) {
+        this.units = units;
+    }
+
+    abstract double calculateBill();
+    abstract String getType();
+}
+
+class SingleRoom extends Room {
+    SingleRoom(int units) {
+        super(units);
+    }
+
+    double calculateBill() {
+        return units * 8.0;
+    }
+
+    String getType() {
+        return "SINGLE";
+    }
+}
+
+class SharedRoom extends Room {
+    int occupants;
+
+    SharedRoom(int units, int occupants) {
+        super(units);
+        this.occupants = occupants;
+    }
+
+    double calculateBill() {
+        return units * 6.0 / occupants;
+    }
+
+    String getType() {
+        return "SHARED";
+    }
+}
+
+class ACRoom extends Room {
+    ACRoom(int units) {
+        super(units);
+    }
+
+    double calculateBill() {
+        return units * 10.0 + 200;
+    }
+
+    String getType() {
+        return "AC";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double total = 0;
+
+        for (int i = 0; i < n; i++) {
+            String type = sc.next();
+            int units = sc.nextInt();
+            Room r;
+
+            switch (type) {
+                case "SINGLE":
+                    r = new SingleRoom(units);
+                    break;
+                case "SHARED":
+                    int occupants = sc.nextInt();
+                    r = new SharedRoom(units, occupants);
+                    break;
+                default:
+                    r = new ACRoom(units);
+            }
+
+            double bill = r.calculateBill();
+            System.out.printf("%s: %.2f%n",
+                    r.getType(), bill);
+            total += bill;
+        }
+
+        System.out.printf("Total: %.2f%n", total);
+        sc.close();
+    }
+}
+4.))
+import java.util.*;
+
+abstract class Employee {
+    String name;
+    double salary;
+
+    Employee(String name, double salary) {
+        this.name = name;
+        this.salary = salary;
+    }
+
+    abstract double calculateBonus();
+}
+
+class FullTime extends Employee {
+    FullTime(String name, double salary) {
+        super(name, salary);
+    }
+
+    double calculateBonus() {
+        return salary * 0.10;
+    }
+}
+
+class PartTime extends Employee {
+    PartTime(String name, double salary) {
+        super(name, salary);
+    }
+
+    double calculateBonus() {
+        return salary * 0.05;
+    }
+}
+
+class Intern extends Employee {
+    Intern(String name, double salary) {
+        super(name, salary);
+    }
+
+    double calculateBonus() {
+        return 2000;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double total = 0;
+
+        for (int i = 0; i < n; i++) {
+            String type = sc.next();
+            String name = sc.next();
+            double salary = sc.nextDouble();
+            Employee e;
+
+            switch (type) {
+                case "FULLTIME":
+                    e = new FullTime(name, salary);
+                    break;
+                case "PARTTIME":
+                    e = new PartTime(name, salary);
+                    break;
+                default:
+                    e = new Intern(name, salary);
+            }
+
+            double bonus = e.calculateBonus();
+            System.out.printf("%s: %.2f%n",
+                    e.name, bonus);
+            total += bonus;
+        }
+
+        System.out.printf("Total Bonus: %.2f%n", total);
+        sc.close();
+    }
+}
+5.))import java.util.*;
+import java.time.LocalDate;
+
+abstract class Plan {
+    String name;
+    LocalDate startDate;
+
+    Plan(String name, String date) {
+        this.name = name;
+        this.startDate = LocalDate.parse(date);
+    }
+
+    abstract int getValidity();
+
+    LocalDate getRenewalDate() {
+        return startDate.plusDays(getValidity());
+    }
+}
+
+class Basic extends Plan {
+    Basic(String name, String date) {
+        super(name, date);
+    }
+
+    int getValidity() {
+        return 30;
+    }
+}
+
+class Standard extends Plan {
+    Standard(String name, String date) {
+        super(name, date);
+    }
+
+    int getValidity() {
+        return 90;
+    }
+}
+
+class Premium extends Plan {
+    Premium(String name, String date) {
+        super(name, date);
+    }
+
+    int getValidity() {
+        return 365;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+
+        for (int i = 0; i < n; i++) {
+            String type = sc.next();
+            String name = sc.next();
+            String date = sc.next();
+            Plan p;
+
+            switch (type) {
+                case "BASIC":
+                    p = new Basic(name, date);
+                    break;
+                case "STANDARD":
+                    p = new Standard(name, date);
+                    break;
+                default:
+                    p = new Premium(name, date);
+            }
+
+            System.out.println(p.name + ": "
+                    + p.getRenewalDate());
+        }
+
+        sc.close();
+    }
+}
+
+
+}
