@@ -1,0 +1,540 @@
+1.))
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+abstract class TicketBooking {
+    protected String seatType;
+    protected int count;
+    protected static final double CONVENIENCE_FEE = 20.0;
+
+    public TicketBooking(String seatType, int count) {
+        this.seatType = seatType;
+        this.count = count;
+    }
+
+    public String getSeatType() {
+        return seatType;
+    }
+
+    public abstract double calculateBasePrice();
+
+    public double calculateTotal() {
+        return calculateBasePrice() + (count * CONVENIENCE_FEE);[cite: 5]
+    }
+}
+
+class RegularTicket extends TicketBooking {
+    public RegularTicket(String seatType, int count) {
+        super(seatType, count);
+    }
+
+    @Override
+    public double calculateBasePrice() {
+        return count * 150.0;[cite: 5]
+    }
+}
+
+class PremiumTicket extends TicketBooking {
+    public PremiumTicket(String seatType, int count) {
+        super(seatType, count);
+    }
+
+    @Override
+    public double calculateBasePrice() {
+        return count * 250.0;[cite: 5]
+    }
+}
+
+class ReclinerTicket extends TicketBooking {
+    public ReclinerTicket(String seatType, int count) {
+        super(seatType, count);
+    }
+
+    @Override
+    public double calculateBasePrice() {
+        return count * 400.0;[cite: 5]
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextInt()) {
+            scanner.close();
+            return;
+        }
+        int n = scanner.nextInt();[cite: 5]
+        List<TicketBooking> bookings = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String seatType = scanner.next();[cite: 5]
+            int count = scanner.nextInt();[cite: 5]
+
+            if (seatType.equals("REGULAR")) {
+                bookings.add(new RegularTicket(seatType, count));
+            } else if (seatType.equals("PREMIUM")) {
+                bookings.add(new PremiumTicket(seatType, count));
+            } else if (seatType.equals("RECLINER")) {
+                bookings.add(new ReclinerTicket(seatType, count));
+            }
+        }
+        scanner.close();
+
+        double totalCollected = 0;
+        for (TicketBooking booking : bookings) {
+            double amount = booking.calculateTotal();
+            totalCollected += amount;
+            System.out.printf("%s: %.2f%n", booking.getSeatType(), amount);[cite: 5]
+        }
+        System.out.printf("Total: %.2f%n", totalCollected);[cite: 5]
+    }
+}
+2.))
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+interface Insurable {
+    double calculateInsurance();
+}
+
+abstract class Parcel {
+    protected String type;
+    protected double weightKg;
+    protected double declaredValue;
+
+    public Parcel(String type, double weightKg, double declaredValue) {
+        this.type = type;
+        this.weightKg = weightKg;
+        this.declaredValue = declaredValue;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public abstract double calculateCharge();
+
+    public double calculateTotal() {
+        return calculateCharge();
+    }
+}
+
+class StandardParcel extends Parcel {
+    public StandardParcel(String type, double weightKg, double declaredValue) {
+        super(type, weightKg, declaredValue);
+    }
+
+    @Override
+    public double calculateCharge() {
+        return 40.0 + (weightKg * 10.0);
+    }
+}
+
+class ExpressParcel extends Parcel implements Insurable {
+    public ExpressParcel(String type, double weightKg, double declaredValue) {
+        super(type, weightKg, declaredValue);
+    }
+
+    @Override
+    public double calculateCharge() {
+        return 80.0 + (weightKg * 15.0);
+    }
+
+    @Override
+    public double calculateInsurance() {
+        return declaredValue * 0.02;
+    }
+}
+
+class FragileParcel extends Parcel implements Insurable {
+    public FragileParcel(String type, double weightKg, double declaredValue) {
+        super(type, weightKg, declaredValue);
+    }
+
+    @Override
+    public double calculateCharge() {
+        double standardCharge = 40.0 + (weightKg * 10.0);
+        return standardCharge + 50.0;
+    }
+
+    @Override
+    public double calculateInsurance() {
+        return declaredValue * 0.02;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextInt()) {
+            scanner.close();
+            return;
+        }
+        int n = scanner.nextInt();
+        List<Parcel> parcels = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String type = scanner.next();
+            double weightKg = scanner.nextDouble();
+            double declaredValue = scanner.nextDouble();
+
+            if (type.equals("STANDARD")) {
+                parcels.add(new StandardParcel(type, weightKg, declaredValue));
+            } else if (type.equals("EXPRESS")) {
+                parcels.add(new ExpressParcel(type, weightKg, declaredValue));
+            } else if (type.equals("FRAGILE")) {
+                parcels.add(new FragileParcel(type, weightKg, declaredValue));
+            }
+        }
+        scanner.close();
+
+        double grandTotal = 0;
+        for (Parcel parcel : parcels) {
+            double charge = parcel.calculateCharge();
+            double insurance = parcel instanceof Insurable ? ((Insurable) parcel).calculateInsurance() : 0.0;
+            double total = charge + insurance;
+            grandTotal += total;
+
+            System.out.printf("%s: Charge=%.2f Insurance=%.2f Total=%.2f%n", parcel.getType(), charge, insurance, total);
+        }
+        System.out.printf("Grand Total: %.2f%n", grandTotal);
+    }
+}
+3.))
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+interface BusUser {
+    double TRANSPORT_FEE = 12000.0;
+}
+
+abstract class Student {
+    protected String name;
+    protected String type;
+
+    public Student(String type, String name) {
+        this.type = type;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public abstract double calculateTuition();
+
+    public double calculateTotalFee() {
+        double total = calculateTuition();
+        if (this instanceof BusUser) {
+            total += BusUser.TRANSPORT_FEE;
+        }
+        return total;
+    }
+}
+
+class DayScholar extends Student implements BusUser {
+    public DayScholar(String type, String name) {
+        super(type, name);
+    }
+
+    @Override
+    public double calculateTuition() {
+        return 40000.0;
+    }
+}
+
+class Hosteller extends Student {
+    public Hosteller(String type, String name) {
+        super(type, name);
+    }
+
+    @Override
+    public double calculateTuition() {
+        return 40000.0 + 60000.0;
+    }
+}
+
+class Scholar extends Student implements BusUser {
+    public Scholar(String type, String name) {
+        super(type, name);
+    }
+
+    @Override
+    public double calculateTuition() {
+        return 20000.0;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextInt()) {
+            scanner.close();
+            return;
+        }
+        int n = scanner.nextInt();
+        List<Student> students = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String type = scanner.next();
+            String name = scanner.next();
+
+            if (type.equals("DAY_SCHOLAR")) {
+                students.add(new DayScholar(type, name));
+            } else if (type.equals("HOSTELLER")) {
+                students.add(new Hosteller(type, name));
+            } else if (type.equals("SCHOLAR") || type.equals("SCHDLAR")) {
+                students.add(new Scholar(type, name));
+            }
+        }
+        scanner.close();
+
+        double totalCollected = 0;
+        for (Student student : students) {
+            double fee = student.calculateTotalFee();
+            totalCollected += fee;
+            System.out.printf("%s: %.2f%n", student.getName(), fee);
+        }
+        System.out.printf("Total Collected: %.2f%n", totalCollected);
+    }
+}
+4.))
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+interface NightServiceable {
+    double applyNightService(double fare);
+}
+
+abstract class Cab {
+    protected String type;
+    protected double km;
+    protected String time;
+
+    public Cab(String type, double km, String time) {
+        this.type = type;
+        this.km = km;
+        this.time = time;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public abstract double calculateBaseFare();
+}
+
+class MiniCab extends Cab {
+    public MiniCab(String type, double km, String time) {
+        super(type, km, time);
+    }
+
+    @Override
+    public double calculateBaseFare() {
+        return km * 10.0;[cite: 8]
+    }
+}
+
+class SedanCab extends Cab implements NightServiceable {
+    public SedanCab(String type, double km, String time) {
+        super(type, km, time);
+    }
+
+    @Override
+    public double calculateBaseFare() {
+        return km * 14.0;[cite: 8]
+    }
+
+    @Override
+    public double applyNightService(double fare) {
+        return fare * 1.2;[cite: 8]
+    }
+}
+
+class SUVCab extends Cab implements NightServiceable {
+    public SUVCab(String type, double km, String time) {
+        super(type, km, time);
+    }
+
+    @Override
+    public double calculateBaseFare() {
+        return km * 18.0;[cite: 8]
+    }
+
+    @Override
+    public double applyNightService(double fare) {
+        return fare * 1.2;[cite: 8]
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextInt()) {
+            scanner.close();
+            return;
+        }
+        int n = scanner.nextInt();
+        List<Cab> trips = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String type = scanner.next();
+            double km = scanner.nextDouble();
+            String time = scanner.next();
+
+            if (type.equals("MINI")) {
+                trips.add(new MiniCab(type, km, time));
+            } else if (type.equals("SEDAN")) {
+                trips.add(new SedanCab(type, km, time));
+            } else if (type.equals("SUV")) {
+                trips.add(new SUVCab(type, km, time));
+            }
+        }
+        scanner.close();
+
+        double total = 0;
+        for (Cab cab : trips) {
+            if (cab.getType().equals("MINI") && cab.getTime().equals("NIGHT")) {
+                System.out.println(cab.getType() + ": night service not available");[cite: 8]
+            } else {
+                double base = cab.calculateBaseFare();
+                double fare = Math.max(base, 100.0);[cite: 8]
+                if (cab.getTime().equals("NIGHT") && cab instanceof NightServiceable) {
+                    fare = ((NightServiceable) cab).applyNightService(fare);[cite: 8]
+                }
+                total += fare;
+                System.out.printf("%s: %.2f%n", cab.getType(), fare);[cite: 8]
+            }
+        }
+        System.out.printf("Total: %.2f%n", total);[cite: 8]
+    }
+}
+5.))
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+interface SaverModeable {
+    double applySaver(double units);
+}
+
+abstract class Appliance {
+    protected String name;
+    protected double hours;
+    protected boolean isSaver;
+    protected double powerWatts;
+
+    public Appliance(String name, double hours, boolean isSaver, double powerWatts) {
+        this.name = name;
+        this.hours = hours;
+        this.isSaver = isSaver;
+        this.powerWatts = powerWatts;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isSaver() {
+        return isSaver;
+    }
+
+    public double calculateUnits() {
+        double units = (powerWatts * hours) / 1000.0;
+        if (isSaver && this instanceof SaverModeable) {
+            units = ((SaverModeable) this).applySaver(units);
+        }
+        return units;
+    }
+}
+
+class Fridge extends Appliance {
+    public Fridge(String name, double hours, boolean isSaver) {
+        super(name, hours, isSaver, 150.0);
+    }
+}
+
+class AirConditioner extends Appliance implements SaverModeable {
+    public AirConditioner(String name, double hours, boolean isSaver) {
+        super(name, hours, isSaver, 1500.0);
+    }
+
+    @Override
+    public double applySaver(double units) {
+        return units * 0.75;
+    }
+}
+
+class TV extends Appliance {
+    public TV(String name, double hours, boolean isSaver) {
+        super(name, hours, isSaver, 100.0);
+    }
+}
+
+class Washer extends Appliance implements SaverModeable {
+    public Washer(String name, double hours, boolean isSaver) {
+        super(name, hours, isSaver, 500.0);
+    }
+
+    @Override
+    public double applySaver(double units) {
+        return units * 0.75;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextInt()) {
+            scanner.close();
+            return;
+        }
+        int n = scanner.nextInt();
+        scanner.nextLine();
+        List<Appliance> list = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String line = scanner.nextLine().trim();
+            if (line.isEmpty()) {
+                i--;
+                continue;
+            }
+            String[] parts = line.split("\\s+");
+            String type = parts[0];
+            double hours = Double.parseDouble(parts[1]);
+            boolean isSaver = parts.length > 2 && parts[2].equals("SAVER");
+
+            if (type.equals("FRIDGE")) {
+                list.add(new Fridge(type, hours, isSaver));
+            } else if (type.equals("AC")) {
+                list.add(new AirConditioner(type, hours, isSaver));
+            } else if (type.equals("TV")) {
+                list.add(new TV(type, hours, isSaver));
+            } else if (type.equals("WASHER")) {
+                list.add(new Washer(type, hours, isSaver));
+            }
+        }
+        scanner.close();
+
+        double totalCost = 0;
+        for (Appliance app : list) {
+            if (app.isSaver() && !(app instanceof SaverModeable)) {
+                System.out.println(app.getName() + ": saver mode not supported");[cite: 9]
+            } else {
+                double units = app.calculateUnits();
+                double cost = units * 8.0;[cite: 9]
+                totalCost += cost;
+                System.out.printf("%s: Units=%.2f Cost=%.2f%n", app.getName(), units, cost);[cite: 9]
+            }
+        }
+        System.out.printf("Total Cost: %.2f%n", totalCost);[cite: 9]
+    }
+}
